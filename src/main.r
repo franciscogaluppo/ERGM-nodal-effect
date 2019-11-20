@@ -1,5 +1,6 @@
 library(igraph)
 library(invgamma)
+source("src/sample_matrix")
 
 args = commandArgs(trailingOnly=TRUE)
 if (length(args)==0) stop("Missing filename.n", call.=FALSE)
@@ -13,6 +14,7 @@ b <-
 
 theta <- c(0, 0) 
 y <- as.adj(g, type="both")
+#y <- matrix(0L, ncol=n, nrow=n)
 phi <- rep(0, n)
 mu <- 0
 var <- 1
@@ -27,9 +29,18 @@ niter <- 1000
 for(i in 1:niter)
 {
 	# Gibbs: Atualiza theta e y
+	prop <- rnorm(1, theta, 1)
+	prop.y <- sample_matrix(theta, phi, y)
+	alpha <-
+	moeda <- rbinom(1, 1, alpha)
+	if(moeda == 1) theta <- prop
 
 	# Gibbs: Atualiza phi e y
 	prop <- rnorm(n, phi, 1)
+	prop.y <- sample_matrix(theta, phi, y)
+	alpha <-
+	moeda <- rbinom(1, 1, alpha)
+	if(moeda == 1) phi <- prop
 
 	# Metropolis-Hastings: Atualiza mu
 	prop <- rnorm(1, mu, 1)
