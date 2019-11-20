@@ -12,7 +12,7 @@ tau <-
 a <-
 b <-
 
-theta <- c(0, 0) 
+theta <- 0 
 y <- as.adj(g, type="both")
 #y <- matrix(0L, ncol=n, nrow=n)
 phi <- rep(0, n)
@@ -20,24 +20,26 @@ mu <- 0
 var <- 1
 sig <- 1
 
-niter <- 1000
-
-###############################
-### CADA PARTE TEM ITERAÇÃO ###
-###############################
+niter <- 100
+naux <- 100
 
 for(i in 1:niter)
 {
-	# Gibbs: Atualiza theta e y
+	# Gibbs: Atualiza theta
 	prop <- rnorm(1, theta, 1)
-	prop.y <- sample_matrix(theta, phi, y)
+	prop.y <- sample_matrix(theta, phi, naux)
 	alpha <-
 	moeda <- rbinom(1, 1, alpha)
 	if(moeda == 1) theta <- prop
 
-	# Gibbs: Atualiza phi e y
+	# Gibbs: Atualiza phi
+
+	################
+	### In turn? ###
+	################
+
 	prop <- rnorm(n, phi, 1)
-	prop.y <- sample_matrix(theta, phi, y)
+	prop.y <- sample_matrix(theta, phi, naux)
 	alpha <-
 	moeda <- rbinom(1, 1, alpha)
 	if(moeda == 1) phi <- prop
