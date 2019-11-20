@@ -1,5 +1,3 @@
-library(igraph)
-
 sample_matrix <- function(theta, phi, naux)
 {
 	n <- length(phi)
@@ -25,13 +23,14 @@ sample_matrix <- function(theta, phi, naux)
 				y[j,i] <- y[i,j]
 			}
 
-	return(y)
-}
+	density <- function(th=theta, tri=triangles, p=phi, a=y, log=FALSE)
+	{
+		if(log)
+			return(exp(th*tri + as.numeric(p %*% apply(a, 1, sum))))
+		else
+			return(th*tri + as.numeric(p %*% apply(a, 1, sum)))
+	}
 
-plot_graph <- function(y, phi)
-{
-	resolution <- 100
-	colors <- palette(resolution)[as.numeric(cut(phi, breaks=resolution))]
-	g <- graph_from_adjacency_matrix(y, mode="undirected")
-	plot(g, vertex.color=colors)
+	return_list <- list("adjacency" = y, "triangles" = triangles, "density" = density)
+	return(return_list)
 }
