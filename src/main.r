@@ -20,8 +20,8 @@ mu <- 0
 var <- 1
 sig <- 1
 
-niter <- 10000
-naux <- 3000
+niter <- 1000
+naux <- 100
 
 theta.history <- matrix(nrow=niter, ncol=1)
 phi.history <- matrix(nrow=niter, ncol=n)

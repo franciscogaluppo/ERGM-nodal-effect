@@ -2,7 +2,7 @@ sample_matrix <- function(theta, phi, naux)
 {
 	n <- length(phi)
 	triangles <- 0
-	y <- matrix(0L, ncol=n, nrow=n)
+	y <- matrix(rbinom(n*n, 1, 0.5), ncol=n, nrow=n)
 
 	for(iter in 1:naux)
 		for(i in 1:(n-1))
@@ -26,9 +26,9 @@ sample_matrix <- function(theta, phi, naux)
 	density <- function(th=theta, tri=triangles, p=phi, a=y, log=FALSE)
 	{
 		if(log)
-			return(exp(th*tri + as.numeric(p %*% apply(a, 1, sum))))
-		else
 			return(th*tri + as.numeric(p %*% apply(a, 1, sum)))
+		else
+			return(exp(th*tri + as.numeric(p %*% apply(a, 1, sum))))
 	}
 
 	return_list <- list("adjacency" = y, "triangles" = triangles, "density" = density)
