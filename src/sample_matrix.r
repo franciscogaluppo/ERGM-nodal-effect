@@ -1,3 +1,16 @@
+get_triangles <- function(y)
+{
+	n <- dim(y)[1]
+	trian <- 0
+	for(i in 1:(n-2))
+		for(j in (i+1):(n-1))
+			for(k in (j+1):n)
+				if(y[i,k] && y[i,j] && y[j,k])
+					trian <- trian + 1
+
+	return(trian)
+}
+
 sample_matrix <- function(theta, phi, naux)
 {
 	n <- length(phi)
@@ -10,12 +23,9 @@ sample_matrix <- function(theta, phi, naux)
 			{
 				count <- 0
 				for(k in 1:n)
-				{
-					if(k == i || k == j)
-						next
 					if(y[i,k] && y[j,k])
 						count <- count + 1
-				}
+
 				prob <- 1/(1 + exp(-(theta*count + phi[i] + phi[j])))
 				y[i,j] <- rbinom(1, 1, prob)
 				if(y[i,j] != y[j,i])

@@ -8,20 +8,23 @@ if (length(args)==0) stop("Missing filename.n", call.=FALSE)
 g <- read_graph(args[1], format="edgelist", directed=FALSE)
 n <- gorder(g)
 
-rho <- 10
-tau <- 10
+scale <- 1
+rho <- 100
+tau <- 100
 a <- 1
 b <- 1
 
-theta <- 0 
+theta <- -1
 y <- as_adjacency_matrix(g, type="both")
+tri <- get_triangles(y)
 phi <- rep(0, n)
-mu <- 0
+mu <- 1
 var <- 1
 sig <- 1
 
-niter <- 1000
+niter <- 100
 naux <- 100
+burnin <- 50
 
 theta.history <- matrix(nrow=niter, ncol=1)
 phi.history <- matrix(nrow=niter, ncol=n)
@@ -30,13 +33,15 @@ var.history <- matrix(nrow=niter, ncol=1)
 
 for(i in 1:niter)
 {
+	print(i)
+
 	# Gibbs: Atualiza theta
 	prop <- rnorm(1, theta, 1)
 	prop.y <- sample_matrix(theta, phi, naux)
 	alpha <- min(1, exp(
 		prop.y$density(log=TRUE) + dnorm(prop, 0, rho, log=TRUE) +
-		dnorm(prop, theta, 1, log=TRUE) + prop.y$density(th=prop, a=y, log=TRUE) - 
-		prop.y$density(a=y, log=TRUE) - dnorm(theta, 0, rho, log=TRUE) -
+		dnorm(prop, theta, 1, log=TRUE) + prop.y$density(th=prop, a=y, tri=tri, log=TRUE) - 
+		prop.y$density(a=y, tri=tri, log=TRUE) - dnorm(theta, 0, rho, log=TRUE) -
 		dnorm(theta, prop, 1, log=TRUE) - prop.y$density(th=prop, log=TRUE)))
 	moeda <- rbinom(1, 1, alpha)
 	if(moeda) theta <- prop
@@ -49,8 +54,8 @@ for(i in 1:niter)
 		prop.y <- sample_matrix(theta, phi, naux)
 		alpha <- min(1, exp(
 			prop.y$density(log=TRUE) + dnorm(prop[j], mu, sig, log=TRUE) +
-			dnorm(phi[j], prop[j], 1, log=TRUE) + prop.y$density(p=prop, a=y, log=TRUE) -	
-			prop.y$density(a=y, log=TRUE) - dnorm(phi[j], mu, sig, log=TRUE) -
+			dnorm(phi[j], prop[j], 1, log=TRUE) + prop.y$density(p=prop, a=y, tri=tri, log=TRUE) -	
+			prop.y$density(a=y, tri=tri, log=TRUE) - dnorm(phi[j], mu, sig, log=TRUE) -
 			dnorm(prop[j], phi[j], 1, log=TRUE) - prop.y$density(p=prop, log=TRUE)))
 		
 		moeda <- rbinom(1, 1, alpha)
@@ -85,9 +90,9 @@ for(i in 1:niter)
 }	
 
 pdf("plots/zachary_karate_history.pdf", width=10)
-plot_history(theta.history, mu.history, var.history)
+plot_history(theta.history[burnin:niter], mu.history[burnin:niter], var.history[burnin:niter])
 dev.off()
 
 pdf("plots/zachary_karate_graph.pdf", width=10)
-plot_graph(y, apply(phi.history, 2, mean))
+plot_graph(y, apply(phi.history[burnin:niter,], 2, mean))
 dev.off()
