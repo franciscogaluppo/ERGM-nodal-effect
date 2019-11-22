@@ -3,7 +3,7 @@ library(igraph)
 plot_graph <- function(y, phi)
 {
 	resolution <- 100
-	palette <- colorRampPalette(c('#ffd500','#ca1616'))
+	palette <- colorRampPalette(c('#fff700','#f81b1b'))
 	normalized <- phi / max(phi, na.rm=TRUE)
 	colors <- palette(resolution)[as.numeric(cut(normalized, breaks=resolution))]
 	g <- graph_from_adjacency_matrix(y, mode="undirected")

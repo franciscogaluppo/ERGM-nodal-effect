@@ -14,8 +14,12 @@ get_triangles <- function(y)
 sample_matrix <- function(theta, phi, naux)
 {
 	n <- length(phi)
-	triangles <- 0
-	y <- matrix(rbinom(n*n, 1, 0.5), ncol=n, nrow=n)
+	y <- matrix(0L, ncol=n, nrow=n)
+	entries <- rbinom(n*(n-1)/2, 1, 0.5)
+	y[lower.tri(y)] <- entries
+	y <- t(y)
+	y[lower.tri(y)] <- entries
+	triangles <- get_triangles(y)
 
 	for(iter in 1:naux)
 		for(i in 1:(n-1))
@@ -33,14 +37,8 @@ sample_matrix <- function(theta, phi, naux)
 				y[j,i] <- y[i,j]
 			}
 
-	density <- function(th=theta, tri=triangles, p=phi, a=y, log=FALSE)
-	{
-		if(log)
-			return(th*tri + as.numeric(p %*% apply(a, 1, sum)))
-		else
-			return(exp(th*tri + as.numeric(p %*% apply(a, 1, sum))))
-	}
+	deg <- apply(y, 1, sum)
 
-	return_list <- list("adjacency" = y, "triangles" = triangles, "density" = density)
+	return_list <- list("adjacency" = y, "triangles" = triangles, "degree" = deg)
 	return(return_list)
 }
