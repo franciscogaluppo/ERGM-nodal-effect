@@ -23,9 +23,9 @@ var <- 1
 sig <- 1
 phi <- rnorm(n, mu, sig)
 
-niter <- 2000
-naux <- 200
-burnin <- 200
+niter <- 4000
+naux <- 400
+burnin <- 1000
 
 theta.history <- matrix(nrow=niter, ncol=1)
 phi.history <- matrix(nrow=niter, ncol=n)
