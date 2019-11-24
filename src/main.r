@@ -91,10 +91,14 @@ for(i in 1:niter)
 	var.history[i] <- var
 }	
 
-pdf("plots/zachary_karate_history.pdf", width=10)
+filename <- sub(pattern="(.*)\\..*$", replacement="\\1",basename(args[1]))
+f1 <- paste("plots/", filename, "_history.pdf", sep="")
+f2 <- paste("plots/", filename, "_graph.pdf", sep="")
+
+pdf(f1, width=10)
 plot_history(theta.history[burnin:niter], mu.history[burnin:niter], var.history[burnin:niter])
 dev.off()
 
-pdf("plots/zachary_karate_graph.pdf", width=10)
+pdf(f2, width=10)
 plot_graph(y, apply(phi.history[burnin:niter,], 2, mean))
 dev.off()
